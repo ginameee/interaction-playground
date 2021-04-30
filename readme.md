@@ -132,3 +132,52 @@ function setLayout() {
 
 window.addEventListener("resize", setLayout);
 ```
+
+## 활성화 시킬 씬(scroll-section) 결정하기
+
+```js
+...
+let yOffset = 0;
+
+window.addEventListener("scroll", () => {
+  yOffset = window.pageYOffset;
+  scrollLoop();
+});
+
+function scrollLoop() {
+  prevScrollHeight = 0;
+
+  for (let i = 0; i < currentSceneIdx; i++) {
+    prevScrollHeight += sceneInfos[i].scrollHeight;
+  }
+
+  if (yOffset > prevScrollHeight + sceneInfos[currentSceneIdx].scrollHeight) {
+    currentSceneIdx++;
+  }
+
+  if (yOffset < prevScrollHeight) {
+    if (currentSceneIdx === 0) {
+      return;
+    }
+    currentSceneIdx--;
+  }
+}
+```
+
+# 기타 팁
+
+## 바운드효과에 대한 처리가 필요하다.
+
+각 브라우저의 처리가 다르기때문에, 종종 바운드효과를 스크롤에 값에 적용하는 브라우저가 있다.\
+최상단에서 바운싱 효과가 일어났을때 pageYOffset 값이 음수로 바뀌게되므로, 안전장치를 달아놓자.
+
+```js
+...
+if (yOffset < prevScrollHeight) {
+      if (currentSceneIdx === 0) {
+        return;
+      }
+      currentSceneIdx--;
+    }
+...
+```
