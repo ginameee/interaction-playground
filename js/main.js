@@ -2,6 +2,8 @@
   /**
    * 즉시시랭함수 내부에서 사용하는 이유: 전역변수의 선언/사용을 방지하기위해
    */
+
+  let yOffset = 0; // window.pageYOffset 대신 쓸 변수
   const sceneInfos = [
     {
       // 0
@@ -51,7 +53,13 @@
     }
   }
 
+  function scrollLoop() {}
+
   window.addEventListener("resize", setLayout);
+  window.addEventListener("scroll", () => {
+    yOffset = window.pageYOffset;
+    scrollLoop();
+  });
 
   setLayout();
 })();
