@@ -64,3 +64,68 @@
 ### 텍스트 애니메이션
 
 - 애니메이션 타이밍
+
+# 3. 인터렉션 구현하기
+
+## 애니메이션을 위한 정보를 담을 객체 정의
+
+```js
+const sceneInfos = [
+  {
+    // 0
+    type: "sticky",
+    heightNum: 5, // 브라우저 높이의 5배로 scrollHeight 세팅 (배율)
+    scrollHeight: 0, // 애니메이션이 끝나는 구간 (초기에 static한 값으로 세팅할 수 없다. 반응형이기때문)
+    objs: {
+      container: document.querySelector("#scroll-section-0"),
+      ...
+    },
+  },
+  {
+    // 1
+    type: "normal",
+    heightNum: 5,
+    scrollHeight: 0,
+    objs: {
+      container: document.querySelector("#scroll-section-1"),
+      ...
+    },
+  },
+  {
+    // 2
+    type: "sticky",
+    heightNum: 5,
+    scrollHeight: 0,
+    objs: {
+      container: document.querySelector("#scroll-section-2"),
+      ...
+    },
+  },
+  {
+    // 3
+    type: "sticky",
+    heightNum: 5,
+    scrollHeight: 0,
+    objs: {
+      container: document.querySelector("#scroll-section-3"),
+      ...
+    },
+  },
+];
+```
+
+## 스크롤 높이 세팅
+
+```js
+/**
+ * 각 스크롤 섹션의 높이 세팅
+ */
+function setLayout() {
+  for (const sceneInfo of sceneInfos) {
+    sceneInfo.scrollHeight = sceneInfo.heightNum * window.innerHeight;
+    sceneInfo.objs.container.style.height = `${sceneInfo.scrollHeight}px`;
+  }
+}
+
+window.addEventListener("resize", setLayout);
+```
