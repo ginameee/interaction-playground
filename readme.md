@@ -287,3 +287,51 @@ function setLayout() {
 window.addEventListener("load", setLayout);
 window.addEventListener("resize", setLayout);
 ```
+
+## 스크롤 애니메이션 구현
+
+스크롤 이동에 따른 스타일값 변경을 통해 애니메이션을 구현한다.\
+변경될 스타일의 시작값과 끝값을 정해놓고, 스크롤 컨테이너 안에서 현재 스크롤 위치가 차지하는 비율을 곱함으로써 스크롤 비율에 대한 스타일 속성값을 구할 수 있다.
+
+```js
+function playAnimation() {
+  const { objs, values } = sceneInfos[currentSceneIdx];
+  const currentYOffset = yOffset - prevScrollHeight;
+
+  switch (currentSceneIdx) {
+    case 0:
+      let aMessageOpacity = calcValues(values.aMessageOpacity, currentYOffset);
+      objs.aMessage.style.opacity = aMessageOpacity;
+      break;
+    case 1:
+      break;
+    case 2:
+      break;
+    case 3:
+      break;
+  }
+}
+
+/**
+ * 스크롤영역에서 현재 스크롤의 배율에 해당하는 value 값을 구한다.
+ * @param {Array} values - 시작값, 끝값
+ */
+function calcValues(values, currentYOffset) {
+  let result;
+  const sceneInfo = sceneInfos[currentSceneIdx];
+  let scrollRatio = currentYOffset / sceneInfo.scrollHeight;
+  const lastValue = values[values.length - 1];
+  const initalValue = values[0];
+  const valueUnit = lastValue - initalValue;
+
+  result = scrollRatio * valueUnit + initalValue;
+
+  return result;
+}
+
+function scrollLoop() {
+  // main.js 참고
+  // ...
+  playAnimation();
+}
+```

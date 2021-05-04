@@ -83,6 +83,7 @@ a {
 
 .main-message {
   display: flex;
+  opacity: 0;
   align-items: center;
   justify-content: center;
   height: 3em;
