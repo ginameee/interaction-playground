@@ -53,6 +53,24 @@
       sceneInfo.scrollHeight = sceneInfo.heightNum * window.innerHeight;
       sceneInfo.objs.container.style.height = `${sceneInfo.scrollHeight}px`;
     }
+
+    /**
+     * 첫 페이지 로드시 currentSceneIdx 결정
+     * 스크롤이 유지되는 새로고침의 경우, 위치한 스크롤에 맞는 currentSceneIdx로 설정해주어야 한다.
+     */
+    yOffset = window.pageYOffset;
+    let totalScrollHeight = 0;
+    for (let i = 0; i < sceneInfos.length; i++) {
+      const sceneInfo = sceneInfos[i];
+      totalScrollHeight += sceneInfo.scrollHeight;
+
+      if (totalScrollHeight >= yOffset) {
+        currentSceneIdx = i;
+        break;
+      }
+    }
+
+    document.body.setAttribute("id", `show-scene-${currentSceneIdx}`);
   }
 
   function scrollLoop() {
@@ -64,6 +82,7 @@
 
     if (yOffset > prevScrollHeight + sceneInfos[currentSceneIdx].scrollHeight) {
       currentSceneIdx++;
+      document.body.setAttribute("id", `show-scene-${currentSceneIdx}`);
     }
 
     if (yOffset < prevScrollHeight) {
@@ -71,16 +90,15 @@
         return;
       }
       currentSceneIdx--;
+      document.body.setAttribute("id", `show-scene-${currentSceneIdx}`);
     }
-
-    console.log(prevScrollHeight);
+    console.log("::: currentSceneIdx", currentSceneIdx);
   }
 
+  window.addEventListener("load", setLayout);
   window.addEventListener("resize", setLayout);
   window.addEventListener("scroll", () => {
     yOffset = window.pageYOffset;
     scrollLoop();
   });
-
-  setLayout();
 })();

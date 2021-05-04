@@ -34,14 +34,14 @@ a {
 }
 
 .local-nav {
-  left: 0;
   height: 52px;
   border-bottom: 1px solid #ddd;
   padding: 0 1rem;
+  width: 100%;
   /* scroll Height의 계산에 영향을 미치지않게 하기위해 */
   position: absolute;
-  top: 45px;
   left: 0;
+  top: 45px; /* global-nav의 높이 */
 }
 
 .global-nav-links,
@@ -173,19 +173,10 @@ a {
   width: 100%;
 }
 
-body #show-scene-0 #scroll-section-0 .sticky-elem,
-body
-  #show-scene-1
-  #scroll-section-1
-  .sticky-elem
-  body
-  #show-scene-2
-  #scroll-section-2
-  .sticky-elem
-  body
-  #show-scene-3
-  #scroll-section-3
-  .sticky-elem {
+#show-scene-0 #scroll-section-0 .sticky-elem,
+#show-scene-1 #scroll-section-1 .sticky-elem,
+#show-scene-2 #scroll-section-2 .sticky-elem,
+#show-scene-3 #scroll-section-3 .sticky-elem {
   display: block;
 }
 

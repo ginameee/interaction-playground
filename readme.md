@@ -162,6 +162,77 @@ function scrollLoop() {
     currentSceneIdx--;
   }
 }
+
+```
+
+## 현재 활성 씬 반영하기
+
+스크롤영역에서 중앙에 보여질 `.sticky-elem`들을 `display: none`처리를 해놓고, `body`에 id값에 따라 노출여부처리가 되도록 css와 js를 작성한다.
+
+```css
+.sticky-elem {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+
+#show-scene-0 #scroll-section-0 .sticky-elem,
+#show-scene-1 #scroll-section-1 .sticky-elem,
+#show-scene-2 #scroll-section-2 .sticky-elem,
+#show-scene-3 #scroll-section-3 .sticky-elem {
+  display: block;
+}
+```
+
+```js
+function scrollLoop() {
+  prevScrollHeight = 0;
+
+  for (let i = 0; i < currentSceneIdx; i++) {
+    prevScrollHeight += sceneInfos[i].scrollHeight;
+  }
+
+  if (yOffset > prevScrollHeight + sceneInfos[currentSceneIdx].scrollHeight) {
+    currentSceneIdx++;
+    document.body.setAttribute("id", `show-scene-${currentSceneIdx}`); // 추가
+  }
+
+  if (yOffset < prevScrollHeight) {
+    if (currentSceneIdx === 0) {
+      return;
+    }
+    currentSceneIdx--;
+    document.body.setAttribute("id", `show-scene-${currentSceneIdx}`); // 추가
+  }
+  console.log("::: currentSceneIdx", currentSceneIdx);
+}
+
+function setLayout() {
+  for (const sceneInfo of sceneInfos) {
+    sceneInfo.scrollHeight = sceneInfo.heightNum * window.innerHeight;
+    sceneInfo.objs.container.style.height = `${sceneInfo.scrollHeight}px`;
+  }
+
+  /**
+   * 첫 페이지 로드시 currentSceneIdx 결정
+   * 스크롤이 유지되는 새로고침의 경우, 위치한 스크롤에 맞는 currentSceneIdx로 설정해주어야 한다.
+   */
+  yOffset = window.pageYOffset;
+  let totalScrollHeight = 0;
+  for (let i = 0; i < sceneInfos.length; i++) {
+    const sceneInfo = sceneInfos[i];
+    totalScrollHeight += sceneInfo.scrollHeight;
+
+    if (totalScrollHeight >= yOffset) {
+      currentSceneIdx = i;
+      break;
+    }
+  }
+
+  document.body.setAttribute("id", `show-scene-${currentSceneIdx}`);
+}
 ```
 
 # 기타 팁
@@ -180,4 +251,39 @@ if (yOffset < prevScrollHeight) {
       currentSceneIdx--;
     }
 ...
+```
+
+## 현재 활성화된 씬 인덱스(currentSceneIdx) 처리
+
+스크롤을 이동하면서 처리하는건 당연히 필요하고, 처음 페이지가 로드될때에대한 처리도 필요하다.\
+최신브라우저들은 새로고침이나 페이지 이동 후 뒤로가기버튼을 통한 페이지 재진입시, 스크롤의 위치를 유지시켜주기때문에 이에대한 처리도 필요하다.
+
+```js
+function setLayout() {
+  for (const sceneInfo of sceneInfos) {
+    sceneInfo.scrollHeight = sceneInfo.heightNum * window.innerHeight;
+    sceneInfo.objs.container.style.height = `${sceneInfo.scrollHeight}px`;
+  }
+
+  /**
+   * 첫 페이지 로드시 currentSceneIdx 결정
+   * 스크롤이 유지되는 새로고침의 경우, 위치한 스크롤에 맞는 currentSceneIdx로 설정해주어야 한다.
+   */
+  yOffset = window.pageYOffset;
+  let totalScrollHeight = 0;
+  for (let i = 0; i < sceneInfos.length; i++) {
+    const sceneInfo = sceneInfos[i];
+    totalScrollHeight += sceneInfo.scrollHeight;
+
+    if (totalScrollHeight >= yOffset) {
+      currentSceneIdx = i;
+      break;
+    }
+  }
+
+  document.body.setAttribute("id", `show-scene-${currentSceneIdx}`);
+}
+
+window.addEventListener("load", setLayout);
+window.addEventListener("resize", setLayout);
 ```
