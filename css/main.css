@@ -169,7 +169,6 @@ a {
 .sticky-elem {
   display: none;
   position: fixed;
-  top: 0;
   left: 0;
   width: 100%;
 }
@@ -187,6 +186,7 @@ a {
   }
 
   .main-message {
+    top: 35vh;
     font-size: 4vw;
   }
 

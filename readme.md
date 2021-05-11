@@ -335,3 +335,73 @@ function scrollLoop() {
   playAnimation();
 }
 ```
+
+## 구간별 애니메이션 (세분화) 구현
+
+하나의 구간에 여러개의 애니메이션이 구간별로 세분화될 수 있다.\
+단순히 작은 부분으로 나눠지는 것이다.
+
+![section-scroll](lecture-resource/section-scroll.png)
+
+1. 스크롤 틀내에서 애니메이션이 시작될 구간과 종료된 구간을 정해놓고,
+
+```js
+const sceneInfos = [
+    {
+      ...
+      // 적용하려는 CSS 값, 정보들의 모음
+      values: {
+        aMessageOpacity: [0, 1, { start: 0.1, end: 0.2 }],
+        bMessageOpacity: [0, 1, { start: 0.3, end: 0.4 }],
+      },
+      ...
+    },
+```
+
+2. value를 계산할 때, scrollRatio 대신 sectionRatio로 계산한다.
+
+```js
+/**
+ * 스크롤영역에서 현재 스크롤의 배율에 해당하는 value 값을 구한다.
+ * @param {Array} values - 시작값, 끝값
+ */
+function calcValues(values, currentYOffset) {
+  let result;
+
+  const scrollHeight = sceneInfos[currentSceneIdx].scrollHeight;
+  const scrollRatio = currentYOffset / scrollHeight;
+
+  const lastValue = values[1];
+  const initalValue = values[0];
+  const valueUnit = lastValue - initalValue;
+
+  const hasSection = values.length === 3;
+  if (hasSection) {
+    /**
+     * 애니메이션에 구간이 있는 경우,
+     * 섹션의 Height을 기준으로 비율을 구해야한다.
+     */
+    const sectionInfo = values[2];
+    const sectionStart = sectionInfo.start * scrollHeight;
+    const sectionEnd = sectionInfo.end * scrollHeight;
+    const sectionHeight = sectionEnd - sectionStart;
+
+    let sectionRatio = 0;
+    let currentSectionYOffset = currentYOffset - sectionStart;
+
+    if (currentSectionYOffset < 0) {
+      sectionRatio = 0;
+    } else if (currentSectionYOffset >= sectionHeight) {
+      sectionRatio = 1;
+    } else {
+      sectionRatio = currentSectionYOffset / sectionHeight;
+    }
+
+    result = sectionRatio * valueUnit + initalValue;
+  } else {
+    result = scrollRatio * valueUnit + initalValue;
+  }
+
+  return result;
+}
+```

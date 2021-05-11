@@ -20,9 +20,12 @@
         cMessage: document.querySelector("#scroll-section-0 .main-message.c"),
         dMessage: document.querySelector("#scroll-section-0 .main-message.d"),
       },
-      // 적용하려는 CSS 값들의 모음
+      // 적용하려는 CSS 값, 정보들의 모음
       values: {
-        aMessageOpacity: [0, 1], // [시작 값, 끝 값], 스크롤값에 따라 이 구간사이에 대응하는 값을 적용해주어야한다.
+        aMessageOpacityIn: [0, 1, { start: 0.1, end: 0.2 }],
+        aMessageOpacityOut: [1, 0, { start: 0.25, end: 0.3 }],
+        aMessageTranslateYIn: [20, 0, { start: 0.1, end: 0.2 }],
+        aMessageTranslateYOut: [0, -20, { start: 0.25, end: 0.3 }],
       },
     },
     {
@@ -118,27 +121,70 @@
    */
   function calcValues(values, currentYOffset) {
     let result;
-    const sceneInfo = sceneInfos[currentSceneIdx];
-    let scrollRatio = currentYOffset / sceneInfo.scrollHeight;
-    const lastValue = values[values.length - 1];
+
+    const scrollHeight = sceneInfos[currentSceneIdx].scrollHeight;
+    const scrollRatio = currentYOffset / scrollHeight;
+
+    const lastValue = values[1];
     const initalValue = values[0];
     const valueUnit = lastValue - initalValue;
 
-    result = scrollRatio * valueUnit + initalValue;
+    const hasSection = values.length === 3;
+    if (hasSection) {
+      /**
+       * 애니메이션에 구간이 있는 경우,
+       * 섹션의 Height을 기준으로 비율을 구해야한다.
+       */
+      const sectionInfo = values[2];
+      const sectionStart = sectionInfo.start * scrollHeight;
+      const sectionEnd = sectionInfo.end * scrollHeight;
+      const sectionHeight = sectionEnd - sectionStart;
+
+      let sectionRatio = 0;
+      let currentSectionYOffset = currentYOffset - sectionStart;
+
+      if (currentSectionYOffset < 0) {
+        sectionRatio = 0;
+      } else if (currentSectionYOffset >= sectionHeight) {
+        sectionRatio = 1;
+      } else {
+        sectionRatio = currentSectionYOffset / sectionHeight;
+      }
+
+      result = sectionRatio * valueUnit + initalValue;
+    } else {
+      result = scrollRatio * valueUnit + initalValue;
+    }
 
     return result;
   }
 
   function playAnimation() {
-    const { objs, values } = sceneInfos[currentSceneIdx];
+    const { objs, values, scrollHeight } = sceneInfos[currentSceneIdx];
     const currentYOffset = yOffset - prevScrollHeight;
+    const scrollRatio = currentYOffset / scrollHeight; // 현재 scroll Y / 현재 씬의 scrollHeight
 
     switch (currentSceneIdx) {
       case 0:
-        let aMessageOpacity = calcValues(
-          values.aMessageOpacity,
-          currentYOffset
-        );
+        if (scrollRatio <= 0.22) {
+          objs.aMessage.style.opacity = calcValues(
+            values.aMessageOpacityIn,
+            currentYOffset
+          );
+          objs.aMessage.style.transform = `translateY(${calcValues(
+            values.aMessageTranslateYIn,
+            currentYOffset
+          )}%)`;
+        } else {
+          objs.aMessage.style.opacity = calcValues(
+            values.aMessageOpacityOut,
+            currentYOffset
+          );
+          objs.aMessage.style.transform = `translateY(${calcValues(
+            values.aMessageTranslateYOut,
+            currentYOffset
+          )}%)`;
+        }
         objs.aMessage.style.opacity = aMessageOpacity;
         break;
       case 1:
