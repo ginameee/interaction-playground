@@ -235,59 +235,6 @@ function setLayout() {
 }
 ```
 
-# 기타 팁
-
-## 바운드효과에 대한 처리가 필요하다.
-
-각 브라우저의 처리가 다르기때문에, 종종 바운드효과를 스크롤에 값에 적용하는 브라우저가 있다.\
-최상단에서 바운싱 효과가 일어났을때 pageYOffset 값이 음수로 바뀌게되므로, 안전장치를 달아놓자.
-
-```js
-...
-if (yOffset < prevScrollHeight) {
-      if (currentSceneIdx === 0) {
-        return;
-      }
-      currentSceneIdx--;
-    }
-...
-```
-
-## 현재 활성화된 씬 인덱스(currentSceneIdx) 처리
-
-스크롤을 이동하면서 처리하는건 당연히 필요하고, 처음 페이지가 로드될때에대한 처리도 필요하다.\
-최신브라우저들은 새로고침이나 페이지 이동 후 뒤로가기버튼을 통한 페이지 재진입시, 스크롤의 위치를 유지시켜주기때문에 이에대한 처리도 필요하다.
-
-```js
-function setLayout() {
-  for (const sceneInfo of sceneInfos) {
-    sceneInfo.scrollHeight = sceneInfo.heightNum * window.innerHeight;
-    sceneInfo.objs.container.style.height = `${sceneInfo.scrollHeight}px`;
-  }
-
-  /**
-   * 첫 페이지 로드시 currentSceneIdx 결정
-   * 스크롤이 유지되는 새로고침의 경우, 위치한 스크롤에 맞는 currentSceneIdx로 설정해주어야 한다.
-   */
-  yOffset = window.pageYOffset;
-  let totalScrollHeight = 0;
-  for (let i = 0; i < sceneInfos.length; i++) {
-    const sceneInfo = sceneInfos[i];
-    totalScrollHeight += sceneInfo.scrollHeight;
-
-    if (totalScrollHeight >= yOffset) {
-      currentSceneIdx = i;
-      break;
-    }
-  }
-
-  document.body.setAttribute("id", `show-scene-${currentSceneIdx}`);
-}
-
-window.addEventListener("load", setLayout);
-window.addEventListener("resize", setLayout);
-```
-
 ## 스크롤 애니메이션 구현
 
 스크롤 이동에 따른 스타일값 변경을 통해 애니메이션을 구현한다.\
@@ -404,4 +351,57 @@ function calcValues(values, currentYOffset) {
 
   return result;
 }
+```
+
+# 기타 팁
+
+## 바운드효과에 대한 처리가 필요하다.
+
+각 브라우저의 처리가 다르기때문에, 종종 바운드효과를 스크롤에 값에 적용하는 브라우저가 있다.\
+최상단에서 바운싱 효과가 일어났을때 pageYOffset 값이 음수로 바뀌게되므로, 안전장치를 달아놓자.
+
+```js
+...
+if (yOffset < prevScrollHeight) {
+      if (currentSceneIdx === 0) {
+        return;
+      }
+      currentSceneIdx--;
+    }
+...
+```
+
+## 현재 활성화된 씬 인덱스(currentSceneIdx) 처리
+
+스크롤을 이동하면서 처리하는건 당연히 필요하고, 처음 페이지가 로드될때에대한 처리도 필요하다.\
+최신브라우저들은 새로고침이나 페이지 이동 후 뒤로가기버튼을 통한 페이지 재진입시, 스크롤의 위치를 유지시켜주기때문에 이에대한 처리도 필요하다.
+
+```js
+function setLayout() {
+  for (const sceneInfo of sceneInfos) {
+    sceneInfo.scrollHeight = sceneInfo.heightNum * window.innerHeight;
+    sceneInfo.objs.container.style.height = `${sceneInfo.scrollHeight}px`;
+  }
+
+  /**
+   * 첫 페이지 로드시 currentSceneIdx 결정
+   * 스크롤이 유지되는 새로고침의 경우, 위치한 스크롤에 맞는 currentSceneIdx로 설정해주어야 한다.
+   */
+  yOffset = window.pageYOffset;
+  let totalScrollHeight = 0;
+  for (let i = 0; i < sceneInfos.length; i++) {
+    const sceneInfo = sceneInfos[i];
+    totalScrollHeight += sceneInfo.scrollHeight;
+
+    if (totalScrollHeight >= yOffset) {
+      currentSceneIdx = i;
+      break;
+    }
+  }
+
+  document.body.setAttribute("id", `show-scene-${currentSceneIdx}`);
+}
+
+window.addEventListener("load", setLayout);
+window.addEventListener("resize", setLayout);
 ```

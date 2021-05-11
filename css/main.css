@@ -82,6 +82,7 @@ a {
 }
 
 .main-message {
+  top: 35vh;
   display: flex;
   opacity: 0;
   align-items: center;
@@ -124,6 +125,16 @@ a {
 
 #scroll-section-2 .main-message {
   font-size: 3.5rem;
+}
+
+#scroll-section-2 .desc-message.b {
+  top: 10%;
+  left: 40%;
+}
+
+#scroll-section-2 .desc-message.c {
+  top: 15%;
+  left: 45%;
 }
 
 .desc-message {
@@ -198,10 +209,6 @@ a {
     font-size: 6rem;
   }
 
-  #scroll-section-2 .main-message {
-    font-size: 6vw;
-  }
-
   .main-message small {
     font-size: 1.5vw;
   }
@@ -216,5 +223,18 @@ a {
 
   .canvas-caption {
     font-size: 2rem;
+  }
+
+  #scroll-section-2 .main-message {
+    font-size: 6vw;
+  }
+
+  #scroll-section-2 .desc-message.b {
+    top: 20%;
+    left: 53%;
+  }
+
+  #scroll-section-2 .desc-message.c {
+    left: 55%;
   }
 }
