@@ -2,7 +2,7 @@
 
 스크롤에따른 인터렉션을 구현해본다.
 
-# 1. 마크업, 스타일링
+# 마크업, 스타일링
 
 ## 스크롤되는 구간을 정하자
 
@@ -24,7 +24,7 @@
 <section class="scroll-section" id="scroll-section-3"></section>
 ```
 
-# 2. 인터렉션 구현 컨셉 정하기
+# 인터렉션 구현 컨셉 정하기
 
 1. 장면장면을 나눈다. (구간을 나눈다.)
 2. 구간에 해당하는 애니메이션을 처리한다.
@@ -68,7 +68,7 @@
 
 - 애니메이션 타이밍
 
-# 3. 인터렉션 구현하기
+# 인터렉션 구현하기
 
 ## 애니메이션을 위한 정보를 담을 객체 정의
 
@@ -352,6 +352,43 @@ function calcValues(values, currentYOffset) {
   return result;
 }
 ```
+
+# 고해상도 비디오 인터랙션
+
+비디오의 인터렉션은 다양한 방법으로 구현할 수 있다.
+
+## video 사용
+
+스크롤을 이용한 비디오 컨트롤은 video 엘리먼트의 `duration`과 `currentTime` 속성값을 이용해서 제어한다.
+
+```js
+const videoElem = document.querySelector(".sample-video");
+let progress;
+let currentFrame;
+function init() {
+  document.body.classList.remove("before-load");
+
+  window.addEventListener("scroll", function () {
+    progress = pageYOffset / (document.body.offsetHeight - window.innerHeight);
+
+    // 바운싱효과 방지를 위한 방어코드
+    if (progress < 0) progress = 0;
+    if (progress > 1) progress = 1;
+
+    // 비디오의 재생시간을 제어
+    videoElem.currentTime = videoElem.duration * progress;
+  });
+}
+
+window.addEventListener("loadeddata", () => {
+  console.log("비디오 로드 완료");
+  init();
+});
+```
+
+## image 사용
+
+## canvas 사용
 
 # 기타 팁
 
